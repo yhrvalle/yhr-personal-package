@@ -1,0 +1,11 @@
+{
+  "name": "com.yhr.personalpackage",
+  "version": "1.0.1",
+  "displayName": "Yhr's Personal Package",
+  "description": "This is my personal package for some systems and setup code I built along the way",
+  "unity": "6000.3",
+  "author": {
+    "name": "Yhr",
+    "url": "https://gamedev-yhr.web.app/"
+  }
+}
