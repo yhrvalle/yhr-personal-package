@@ -44,7 +44,7 @@ namespace PersonalPackage.Editor
         public static void ImportBetterHierarchyAsset()
         {
             Assets.ImportAssets("Better Hierarchy.unitypackage", "Toaster Head/Editor ExtensionsUtilities");
-            
+
         }
 
         [MenuItem("Tools/Setup/Import DarkMode Unity Asset")]
@@ -59,14 +59,14 @@ namespace PersonalPackage.Editor
         {
             Packages.InstallPackages(new[] { "https://github.com/KyleBanks/scene-ref-attribute.git" });
         }
-        
+
         [MenuItem("Tools/Import Entalphia")]
-        public static void ImportEntalphia()
+        public static void ImportEnthalpy()
         {
             string homePath =  Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
             string folderPath = Combine(homePath, "Documents");
-            const string folder = "Entalphia Package";
-            const string assetName = "entalphia.unitypackage";
+            const string folder = "Enthalpy Package";
+            const string assetName = "enthalpy.unitypackage";
             ImportPackage(Combine(folderPath, folder, assetName), false);
         }
 
@@ -78,7 +78,10 @@ namespace PersonalPackage.Editor
                 foreach (string folder in folders)
                 {
                     string path = Combine(fullPath, folder);
-                    if (!Exists(path)) CreateDirectory(path);
+                    if (!Exists(path))
+                    {
+                        CreateDirectory(path);
+                    }
                 }
             }
 
@@ -89,32 +92,38 @@ namespace PersonalPackage.Editor
                 {
                     string destinationPath = $"Assets/{newParent}/{folderName}";
                     string error = MoveAsset(sourcePath, destinationPath);
-                    if (!string.IsNullOrEmpty(error)) Debug.LogError($"Failed to move folder '{folderName}': {error}");
+                    if (!string.IsNullOrEmpty(error))
+                    {
+                        Debug.LogError($"Failed to move folder '{folderName}': {error}");
+                    }
                 }
             }
 
             public static void Delete(string folderName)
             {
                 string pathToDelete = $"Assets/{folderName}";
-                if (IsValidFolder(pathToDelete)) DeleteAsset(pathToDelete);
+                if (IsValidFolder(pathToDelete))
+                {
+                    DeleteAsset(pathToDelete);
+                }
             }
         }
 
         private static class Packages
         {
             private static AddRequest s_request;
-            private static readonly Queue<string> PackageToAdd = new();
+            private static readonly Queue<string> s_packageToAdd = new();
 
             public static void InstallPackages(string[] packages)
             {
                 foreach (string package in packages)
                 {
-                    PackageToAdd.Enqueue(package);
+                    s_packageToAdd.Enqueue(package);
                 }
 
-                if (PackageToAdd.Count > 0)
+                if (s_packageToAdd.Count > 0)
                 {
-                    s_request = Client.Add(PackageToAdd.Dequeue());
+                    s_request = Client.Add(s_packageToAdd.Dequeue());
                     EditorApplication.update += Progress;
                 }
             }
@@ -124,13 +133,19 @@ namespace PersonalPackage.Editor
                 if (s_request.IsCompleted)
                 {
                     if (s_request.Status == StatusCode.Success)
+                    {
                         Debug.Log("Installed: " + s_request.Result.packageId);
-                    else if (s_request.Status >= StatusCode.Failure) Debug.Log(s_request.Error.message);
+                    }
+                    else if (s_request.Status >= StatusCode.Failure)
+                    {
+                        Debug.Log(s_request.Error.message);
+                    }
+
                     EditorApplication.update -= Progress;
-                    if (PackageToAdd.Count > 0)
+                    if (s_packageToAdd.Count > 0)
                     {
                         await Task.Delay(1000);
-                        s_request = Client.Add(PackageToAdd.Dequeue());
+                        s_request = Client.Add(s_packageToAdd.Dequeue());
                         EditorApplication.update += Progress;
                     }
                 }
@@ -144,7 +159,7 @@ namespace PersonalPackage.Editor
                 string homePath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
                 string rootFolder = Combine(homePath, ".local/share/unity3d/Asset Store-5.x");
                 ImportPackage(Combine(rootFolder, subfolder, asset), false);
-                
+
             }
         }
     }
